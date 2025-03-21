@@ -1,5 +1,6 @@
 package com.example.mais_sobre_springboot.service;
 
+import com.example.mais_sobre_springboot.exceptions.RecursoNaoEncontrado;
 import com.example.mais_sobre_springboot.model.Produto;
 import com.example.mais_sobre_springboot.repository.ProdutoRepository;
 import org.springframework.stereotype.Service;
@@ -20,8 +21,9 @@ public class ProdutoService {
         return produtoRepository.findAll();
     }
 
-    public Optional<Produto> buscarPorId(Long id) {
-        return produtoRepository.findById(id);
+    public Produto buscarPorId(Long id) {
+        return produtoRepository.findById(id)
+                .orElseThrow(() -> new RecursoNaoEncontrado("Produto com id: "+id+" não encontrado."));
     }
 
     public Produto salvarProduto(Produto produto) {
@@ -29,6 +31,11 @@ public class ProdutoService {
     }
 
     public void deletarProduto(Long id) {
+
+        if(!produtoRepository.existsById(id)) {
+            throw  new RecursoNaoEncontrado("Produto com ID "+id+ " não encontrado.");
+        }
+
         produtoRepository.deleteById(id);
     }
 
